@@ -1,0 +1,254 @@
+{% extends "base.html" %}
+{% load core_extras %}
+
+{% block title %}Exchange: {{ exchange.service_request.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <nav aria-label="Breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'core:my_exchanges' %}">My Exchanges</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{{ exchange.service_request.title|truncatechars:40 }}</li>
+    </ol>
+  </nav>
+
+  <div class="row g-4">
+
+    <!-- ─── Exchange summary ─────────────────────────────────────────────── -->
+    <div class="col-lg-7">
+      <div class="ss-card p-4 mb-4">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+          <h1 class="h4 fw-bold mb-0">{{ exchange.service_request.title }}</h1>
+          <span class="badge badge-{{ exchange.status }} fs-6">{{ exchange.get_status_display }}</span>
+        </div>
+
+        <div class="row g-3 mt-3 text-center">
+          <div class="col-4">
+            <div class="stat-widget">
+              <div class="stat-value">{{ exchange.agreed_hours }}h</div>
+              <div class="stat-label">Agreed</div>
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="stat-widget">
+              <div class="stat-value small">
+                <a href="{% url 'core:profile' username=exchange.requester.username %}"
+                   class="text-decoration-none text-dark">{{ exchange.requester.username }}</a>
+              </div>
+              <div class="stat-label">Requester</div>
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="stat-widget">
+              <div class="stat-value small">
+                <a href="{% url 'core:profile' username=exchange.provider.username %}"
+                   class="text-decoration-none text-dark">{{ exchange.provider.username }}</a>
+              </div>
+              <div class="stat-label">Provider</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── Confirmation panel ────────────────────────────────────────── -->
+      {% if exchange.status not in 'completed,disputed' %}
+      <div class="ss-card p-4 mb-4">
+        <h2 class="h5 fw-bold mb-3">Confirm Completion</h2>
+        <p class="text-muted small">Both parties must confirm before credits are transferred.</p>
+
+        <!-- Progress steps -->
+        <div class="mb-3">
+          <div class="exchange-step">
+            <div class="step-icon {% if exchange.requester_confirmed %}done{% else %}pending{% endif %}"
+                 aria-label="Requester confirmation {% if exchange.requester_confirmed %}complete{% else %}pending{% endif %}">
+              {% if exchange.requester_confirmed %}
+              <i class="bi bi-check" aria-hidden="true"></i>
+              {% else %}
+              <span aria-hidden="true">1</span>
+              {% endif %}
+            </div>
+            <div>
+              <strong>Requester confirms</strong>
+              <div class="text-muted small">
+                {% if exchange.requester_confirmed %}Confirmed ✓{% else %}Waiting…{% endif %}
+              </div>
+            </div>
+          </div>
+          <div class="exchange-step mt-2">
+            <div class="step-icon {% if exchange.provider_confirmed %}done{% else %}pending{% endif %}"
+                 aria-label="Provider confirmation {% if exchange.provider_confirmed %}complete{% else %}pending{% endif %}">
+              {% if exchange.provider_confirmed %}
+              <i class="bi bi-check" aria-hidden="true"></i>
+              {% else %}
+              <span aria-hidden="true">2</span>
+              {% endif %}
+            </div>
+            <div>
+              <strong>Provider confirms</strong>
+              <div class="text-muted small">
+                {% if exchange.provider_confirmed %}Confirmed ✓{% else %}Waiting…{% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {% if is_requester and not exchange.requester_confirmed %}
+        <form method="post" action="{% url 'core:exchange_confirm' pk=exchange.pk %}">
+          {% csrf_token %}
+          <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" id="confirm-check" required>
+            <label class="form-check-label" for="confirm-check">
+              I confirm I received {{ exchange.agreed_hours }}h of service
+            </label>
+          </div>
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-success" id="confirm-btn" disabled>Confirm completion</button>
+          </div>
+        </form>
+        {% elif is_provider and not exchange.provider_confirmed %}
+        <form method="post" action="{% url 'core:exchange_confirm' pk=exchange.pk %}">
+          {% csrf_token %}
+          <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" id="confirm-check" required>
+            <label class="form-check-label" for="confirm-check">
+              I confirm I provided {{ exchange.agreed_hours }}h of service
+            </label>
+          </div>
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-success" id="confirm-btn" disabled>Confirm completion</button>
+          </div>
+        </form>
+        {% elif is_requester and exchange.requester_confirmed or is_provider and exchange.provider_confirmed %}
+        <div class="alert alert-info mb-0" role="status" aria-live="polite">
+          <i class="bi bi-hourglass-split me-1" aria-hidden="true"></i>
+          Your confirmation has been recorded. Waiting for the other party.
+        </div>
+        {% endif %}
+
+        <!-- Dispute -->
+        <hr>
+        <form method="post" action="{% url 'core:exchange_dispute' pk=exchange.pk %}"
+              data-confirm="Raise a dispute? No credits will be transferred until resolved.">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-outline-danger btn-sm">
+            <i class="bi bi-flag me-1" aria-hidden="true"></i>Report an issue
+          </button>
+        </form>
+      </div>
+      {% endif %}
+
+      <!-- ─── Completed state ───────────────────────────────────────────── -->
+      {% if exchange.status == 'completed' %}
+      <div class="alert alert-success" role="status">
+        <i class="bi bi-check-circle-fill me-2" aria-hidden="true"></i>
+        Exchange completed on {{ exchange.completed_at|date:"d M Y, H:i" }}. Credits transferred.
+      </div>
+      {% elif exchange.status == 'disputed' %}
+      <div class="alert alert-warning" role="alert">
+        <i class="bi bi-flag-fill me-2" aria-hidden="true"></i>
+        Dispute raised. No credits transferred. Please contact support.
+      </div>
+      {% endif %}
+
+    </div><!-- /col -->
+
+    <!-- ─── Ledger & reviews ──────────────────────────────────────────────── -->
+    <div class="col-lg-5">
+
+      <!-- Ledger entries -->
+      {% if ledger_entries %}
+      <div class="ss-card p-4 mb-4">
+        <h2 class="h5 fw-bold mb-3">
+          <i class="bi bi-journal-text me-1" aria-hidden="true"></i>Ledger Settlement
+        </h2>
+        <table class="table table-sm mb-0" aria-label="Ledger entries for this exchange">
+          <thead>
+            <tr>
+              <th scope="col">User</th>
+              <th scope="col" class="text-end">Hours</th>
+              <th scope="col" class="text-end">Type</th>
+              <th scope="col" class="text-end">Balance</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for entry in ledger_entries %}
+            <tr>
+              <td>{{ entry.user.username }}</td>
+              <td class="text-end {% if entry.hours_delta > 0 %}ledger-earn{% else %}ledger-spend{% endif %}">
+                {% if entry.hours_delta > 0 %}+{% endif %}{{ entry.hours_delta }}h
+              </td>
+              <td class="text-end">{{ entry.get_entry_type_display }}</td>
+              <td class="text-end fw-semibold">{{ entry.balance_after }}h</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        <small class="text-muted d-block mt-2">
+          Double-entry invariant: Σ(hours_delta) =
+          {% with total=0 %}
+          {{ ledger_entries.first.hours_delta|add:ledger_entries.last.hours_delta }}h ✓
+          {% endwith %}
+        </small>
+      </div>
+      {% endif %}
+
+      <!-- Reviews -->
+      <div class="ss-card p-4">
+        <h2 class="h5 fw-bold mb-3">Reviews</h2>
+
+        {% if reviews %}
+          {% for review in reviews %}
+          <div class="border-bottom pb-3 mb-3">
+            <div class="d-flex justify-content-between">
+              <a href="{% url 'core:profile' username=review.reviewer.username %}" class="fw-semibold text-decoration-none">
+                {{ review.reviewer.get_full_name|default:review.reviewer.username }}
+              </a>
+              <small class="text-muted">{{ review.created_at|date:"d M Y" }}</small>
+            </div>
+            <div class="stars" aria-label="Rating {{ review.rating }} out of 5">
+              {% for i in review.rating|star_range %}
+              <i class="bi bi-star-fill star-filled small" aria-hidden="true"></i>
+              {% endfor %}
+              {% for i in review.rating|empty_stars %}
+              <i class="bi bi-star star-empty small" aria-hidden="true"></i>
+              {% endfor %}
+            </div>
+            {% if review.comment %}<p class="small mb-0 mt-1">{{ review.comment }}</p>{% endif %}
+          </div>
+          {% endfor %}
+        {% else %}
+          <p class="text-muted small">No reviews yet.</p>
+        {% endif %}
+
+        {% if review_form %}
+        <h3 class="h6 fw-bold mt-3 mb-2">Leave a review</h3>
+        <form method="post" action="{% url 'core:review_submit' exchange_pk=exchange.pk %}">
+          {% csrf_token %}
+          <div class="mb-2">
+            <label for="{{ review_form.rating.id_for_label }}" class="form-label">Rating</label>
+            {{ review_form.rating }}
+          </div>
+          <div class="mb-3">
+            <label for="{{ review_form.comment.id_for_label }}" class="form-label">Comment (optional)</label>
+            {{ review_form.comment }}
+          </div>
+          <button type="submit" class="btn btn-ss-primary btn-sm">Submit review</button>
+        </form>
+        {% endif %}
+      </div>
+
+    </div><!-- /col -->
+  </div><!-- /row -->
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Enable confirm button only when checkbox is ticked
+const check = document.getElementById('confirm-check');
+const btn = document.getElementById('confirm-btn');
+if (check && btn) {
+  check.addEventListener('change', () => { btn.disabled = !check.checked; });
+}
+</script>
+{% endblock %}

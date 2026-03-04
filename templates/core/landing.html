@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<!-- ─── Hero ─────────────────────────────────────────────────────────────── -->
+<section class="hero" aria-labelledby="hero-heading">
+  <div class="container">
+    <div class="row align-items-center g-4">
+      <div class="col-lg-6">
+        <h1 id="hero-heading" class="mb-3">Trade time,<br>not money.</h1>
+        <p class="lead mb-4">
+          Earn credits by sharing your skills. Spend credits to learn new ones.
+          SkillSwap is a community time-bank where 1 hour = 1 credit — always fair.
+        </p>
+        <div class="hero-cta d-flex flex-wrap gap-3">
+          <a href="{% url 'core:register' %}" class="btn btn-ss-accent btn-lg">
+            <i class="bi bi-person-plus me-2" aria-hidden="true"></i>Get started free
+          </a>
+          <a href="{% url 'core:marketplace' %}" class="btn btn-outline-light btn-lg">
+            Browse requests
+          </a>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <!-- How-it-works mini explainer -->
+        <div class="bg-white bg-opacity-10 rounded-3 p-4 text-white">
+          <h2 class="h5 mb-3 fw-bold">How time credits work</h2>
+          <div class="d-flex align-items-center gap-3 mb-2">
+            <div class="rounded-circle bg-warning d-flex align-items-center justify-content-center fw-bold text-dark"
+                 style="width:2rem;height:2rem;flex-shrink:0" aria-hidden="true">1</div>
+            <span>Post a request for a skill you need</span>
+          </div>
+          <div class="d-flex align-items-center gap-3 mb-2">
+            <div class="rounded-circle bg-warning d-flex align-items-center justify-content-center fw-bold text-dark"
+                 style="width:2rem;height:2rem;flex-shrink:0" aria-hidden="true">2</div>
+            <span>Providers bid with hours &amp; a message</span>
+          </div>
+          <div class="d-flex align-items-center gap-3 mb-2">
+            <div class="rounded-circle bg-warning d-flex align-items-center justify-content-center fw-bold text-dark"
+                 style="width:2rem;height:2rem;flex-shrink:0" aria-hidden="true">3</div>
+            <span>Accept the best bid, work together</span>
+          </div>
+          <div class="d-flex align-items-center gap-3">
+            <div class="rounded-circle bg-warning d-flex align-items-center justify-content-center fw-bold text-dark"
+                 style="width:2rem;height:2rem;flex-shrink:0" aria-hidden="true">4</div>
+            <span>Both confirm → credits transfer automatically</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Stats bar ─────────────────────────────────────────────────────────── -->
+<section class="py-4 bg-white border-bottom" aria-label="Platform statistics">
+  <div class="container">
+    <div class="row text-center g-3">
+      <div class="col-4">
+        <div class="fw-bold fs-3 text-ss-primary" style="color:var(--ss-primary)">{{ stats.total_users }}</div>
+        <div class="small text-muted">Members</div>
+      </div>
+      <div class="col-4">
+        <div class="fw-bold fs-3" style="color:var(--ss-primary)">{{ stats.open_requests }}</div>
+        <div class="small text-muted">Open Requests</div>
+      </div>
+      <div class="col-4">
+        <div class="fw-bold fs-3" style="color:var(--ss-primary)">{{ stats.completed_exchanges }}</div>
+        <div class="small text-muted">Exchanges Done</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Example / how it works ───────────────────────────────────────────── -->
+<section class="py-5" aria-labelledby="how-heading">
+  <div class="container">
+    <h2 id="how-heading" class="text-center fw-bold mb-4">An example exchange</h2>
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="row g-3 align-items-center text-center">
+          <div class="col-12 col-md-4">
+            <div class="ss-card p-4">
+              <i class="bi bi-mortarboard fs-2 text-success mb-2" aria-hidden="true"></i>
+              <p class="mb-0 fw-semibold">Alice teaches Linear Algebra (1h)</p>
+              <p class="text-success fw-bold mt-1">+1.0 credit earned</p>
+            </div>
+          </div>
+          <div class="col-12 col-md-1 fs-2 text-muted d-none d-md-block">→</div>
+          <div class="col-12 col-md-4">
+            <div class="ss-card p-4">
+              <i class="bi bi-music-note-beamed fs-2 text-danger mb-2" aria-hidden="true"></i>
+              <p class="mb-0 fw-semibold">Alice gets Guitar lesson (1h)</p>
+              <p class="text-danger fw-bold mt-1">−1.0 credit spent</p>
+            </div>
+          </div>
+          <div class="col-12 col-md-1 fs-2 text-muted d-none d-md-block">→</div>
+          <div class="col-12 col-md-2">
+            <div class="ss-card p-4 text-center">
+              <i class="bi bi-check-circle-fill fs-2 text-success mb-2" aria-hidden="true"></i>
+              <p class="mb-0 fw-bold" style="color:var(--ss-primary)">Net: 0</p>
+              <small class="text-muted">Fair &amp; audited</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Call to action ───────────────────────────────────────────────────── -->
+<section class="py-5 text-white text-center" style="background:var(--ss-primary)">
+  <div class="container">
+    <h2 class="fw-bold mb-2">Ready to start swapping?</h2>
+    <p class="lead mb-4 opacity-75">Join today and receive 5.0 hours of credit to get you started.</p>
+    <a href="{% url 'core:register' %}" class="btn btn-ss-accent btn-lg px-5">
+      Create free account
+    </a>
+  </div>
+</section>
+{% endblock %}

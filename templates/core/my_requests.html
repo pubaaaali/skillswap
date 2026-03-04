@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}My Requests{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 fw-bold mb-0">My Requests</h1>
+    <a href="{% url 'core:request_create' %}" class="btn btn-ss-primary">
+      <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>New request
+    </a>
+  </div>
+
+  {% if requests %}
+  <div class="row g-3">
+    {% for sr in requests %}
+    <div class="col-12">
+      <div class="ss-card request-card p-3">
+        <div class="d-flex flex-wrap justify-content-between align-items-start gap-2">
+          <div>
+            <h2 class="h5 mb-1">
+              <a href="{% url 'core:request_detail' pk=sr.pk %}" class="text-decoration-none">{{ sr.title }}</a>
+            </h2>
+            <span class="skill-tag">{{ sr.skill_category }}</span>
+            <span class="text-muted small ms-2">Posted {{ sr.created_at|date:"d M Y" }}</span>
+          </div>
+          <div class="text-end">
+            <div><span class="hours-badge">{{ sr.hours_required }}h</span></div>
+            <div class="mt-1">
+              <span class="badge badge-{{ sr.status }}">{{ sr.get_status_display }}</span>
+              <span class="badge bg-secondary ms-1">{{ sr.bid_count }} bid{{ sr.bid_count|pluralize }}</span>
+            </div>
+          </div>
+        </div>
+        {% if sr.status == 'open' %}
+        <div class="mt-2">
+          <a href="{% url 'core:request_detail' pk=sr.pk %}" class="btn btn-outline-primary btn-sm me-1">View bids</a>
+          <a href="{% url 'core:request_edit' pk=sr.pk %}" class="btn btn-outline-secondary btn-sm">Edit</a>
+        </div>
+        {% elif sr.status == 'accepted' %}
+        <div class="mt-2">
+          <a href="{% url 'core:exchange_detail' pk=sr.exchange.pk %}" class="btn btn-ss-primary btn-sm">View exchange</a>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="text-center py-5 text-muted">
+    <i class="bi bi-inbox fs-1 d-block mb-2" aria-hidden="true"></i>
+    <p>You haven't posted any requests yet.</p>
+    <a href="{% url 'core:request_create' %}" class="btn btn-ss-primary">Post your first request</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

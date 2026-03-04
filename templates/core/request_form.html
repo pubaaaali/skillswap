@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}{{ action }} Request{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-md-7">
+      <div class="ss-card p-4">
+        <h1 class="h4 fw-bold mb-1">{{ action }} a Service Request</h1>
+        {% if profile %}
+        <p class="text-muted mb-4">
+          Your balance: <strong class="live-balance">{{ profile.time_balance }}h</strong>
+        </p>
+        {% endif %}
+
+        {% if form.errors %}
+        <div class="form-error-summary" role="alert" aria-live="assertive">
+          <strong>Please fix the following:</strong>
+          <ul class="mb-0 mt-1 ps-3">
+            {% for field in form %}{% for err in field.errors %}<li>{{ field.label }}: {{ err }}</li>{% endfor %}{% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+
+        <form method="post" novalidate>
+          {% csrf_token %}
+
+          <div class="mb-3">
+            <label for="{{ form.title.id_for_label }}" class="form-label">Title <span class="text-danger" aria-hidden="true">*</span></label>
+            {{ form.title }}
+            {% if form.title.errors %}
+            <div class="invalid-feedback d-block" role="alert">{{ form.title.errors|join:" " }}</div>
+            {% endif %}
+          </div>
+
+          <div class="mb-3">
+            <label for="{{ form.skill_category.id_for_label }}" class="form-label">Skill category <span class="text-danger" aria-hidden="true">*</span></label>
+            {{ form.skill_category }}
+            <div class="form-text">e.g. Mathematics, Guitar, Web Development, Spanish…</div>
+            {% if form.skill_category.errors %}
+            <div class="invalid-feedback d-block" role="alert">{{ form.skill_category.errors|join:" " }}</div>
+            {% endif %}
+          </div>
+
+          <div class="mb-3">
+            <label for="{{ form.description.id_for_label }}" class="form-label">Description <span class="text-danger" aria-hidden="true">*</span></label>
+            {{ form.description }}
+            {% if form.description.errors %}
+            <div class="invalid-feedback d-block" role="alert">{{ form.description.errors|join:" " }}</div>
+            {% endif %}
+          </div>
+
+          <div class="row g-3 mb-4">
+            <div class="col-md-5">
+              <label for="{{ form.hours_required.id_for_label }}" class="form-label">
+                Estimated hours <span class="text-danger" aria-hidden="true">*</span>
+              </label>
+              {{ form.hours_required }}
+              {% if form.hours_required.errors %}
+              <div class="invalid-feedback d-block" role="alert">{{ form.hours_required.errors|join:" " }}</div>
+              {% endif %}
+            </div>
+            <div class="col-md-7">
+              <label for="{{ form.preferred_schedule.id_for_label }}" class="form-label">Preferred schedule</label>
+              {{ form.preferred_schedule }}
+            </div>
+          </div>
+
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-ss-primary px-4">{{ action }} request</button>
+            <a href="{% url 'core:marketplace' %}" class="btn btn-outline-secondary">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

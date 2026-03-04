@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+{% load core_extras %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+  <!-- ─── Header ──────────────────────────────────────────────────────────── -->
+  <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+    <div>
+      <h1 class="h3 fw-bold mb-0">Dashboard</h1>
+      <p class="text-muted mb-0">Welcome back, {{ user.get_full_name|default:user.username }}!</p>
+    </div>
+    <div class="d-flex align-items-center gap-3">
+      <div class="balance-pill live-balance"
+           aria-label="Your time balance: {{ profile.time_balance }} hours">
+        <i class="bi bi-clock" aria-hidden="true"></i>
+        <span>{{ profile.time_balance }}h balance</span>
+      </div>
+      <a href="{% url 'core:ledger' %}" class="btn btn-outline-secondary btn-sm">View ledger</a>
+    </div>
+  </div>
+
+  <!-- ─── Stat widgets ─────────────────────────────────────────────────────── -->
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+      <div class="stat-widget">
+        <div class="stat-value">{{ open_requests|length }}</div>
+        <div class="stat-label">Open requests</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-widget">
+        <div class="stat-value">{{ my_bids|length }}</div>
+        <div class="stat-label">Active bids</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-widget">
+        <div class="stat-value">{{ as_requester|length }}</div>
+        <div class="stat-label">As requester</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-widget">
+        <div class="stat-value">{{ as_provider|length }}</div>
+        <div class="stat-label">As provider</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── Quick actions ────────────────────────────────────────────────────── -->
+  <div class="row g-2 mb-4">
+    <div class="col-6 col-md-3">
+      <a href="{% url 'core:request_create' %}" class="btn btn-ss-primary w-100">
+        <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>Post Request
+      </a>
+    </div>
+    <div class="col-6 col-md-3">
+      <a href="{% url 'core:marketplace' %}" class="btn btn-outline-primary w-100">
+        <i class="bi bi-shop me-1" aria-hidden="true"></i>Browse
+      </a>
+    </div>
+    <div class="col-6 col-md-3">
+      <a href="{% url 'core:profile' username=user.username %}" class="btn btn-outline-secondary w-100">
+        <i class="bi bi-person me-1" aria-hidden="true"></i>My Profile
+      </a>
+    </div>
+    <div class="col-6 col-md-3">
+      <a href="{% url 'core:skill_add' %}" class="btn btn-outline-success w-100">
+        <i class="bi bi-lightbulb me-1" aria-hidden="true"></i>Add Skill
+      </a>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <!-- ─── My open requests ──────────────────────────────────────────────── -->
+    <div class="col-md-6">
+      <div class="ss-card p-3 h-100">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h2 class="h6 fw-bold mb-0">My Open Requests</h2>
+          <a href="{% url 'core:my_requests' %}" class="btn btn-link btn-sm p-0">View all</a>
+        </div>
+        {% if open_requests %}
+          {% for sr in open_requests %}
+          <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+            <div>
+              <a href="{% url 'core:request_detail' pk=sr.pk %}" class="fw-semibold text-decoration-none">
+                {{ sr.title|truncatechars:40 }}
+              </a>
+              <div class="text-muted small">{{ sr.bid_count }} bid{{ sr.bid_count|pluralize }}</div>
+            </div>
+            <span class="badge badge-{{ sr.status }}">{{ sr.get_status_display }}</span>
+          </div>
+          {% endfor %}
+        {% else %}
+          <p class="text-muted small mb-0">You haven't posted any requests yet.</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- ─── My bids ───────────────────────────────────────────────────────── -->
+    <div class="col-md-6">
+      <div class="ss-card p-3 h-100">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h2 class="h6 fw-bold mb-0">My Bids</h2>
+          <a href="{% url 'core:my_bids' %}" class="btn btn-link btn-sm p-0">View all</a>
+        </div>
+        {% if my_bids %}
+          {% for bid in my_bids %}
+          <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+            <div>
+              <a href="{% url 'core:request_detail' pk=bid.request.pk %}" class="fw-semibold text-decoration-none">
+                {{ bid.request.title|truncatechars:40 }}
+              </a>
+              <div class="text-muted small">{{ bid.proposed_hours }}h proposed</div>
+            </div>
+            <span class="badge badge-{{ bid.status }}">{{ bid.get_status_display }}</span>
+          </div>
+          {% endfor %}
+        {% else %}
+          <p class="text-muted small mb-0">You haven't placed any bids yet.</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- ─── Active exchanges ──────────────────────────────────────────────── -->
+    <div class="col-md-6">
+      <div class="ss-card p-3">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h2 class="h6 fw-bold mb-0">Active Exchanges (as requester)</h2>
+          <a href="{% url 'core:my_exchanges' %}" class="btn btn-link btn-sm p-0">View all</a>
+        </div>
+        {% if as_requester %}
+          {% for ex in as_requester %}
+          <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+            <div>
+              <a href="{% url 'core:exchange_detail' pk=ex.pk %}" class="fw-semibold text-decoration-none">
+                {{ ex.service_request.title|truncatechars:35 }}
+              </a>
+              <div class="text-muted small">Provider: {{ ex.provider.get_full_name|default:ex.provider.username }}</div>
+            </div>
+            <span class="badge badge-{{ ex.status }}">{{ ex.get_status_display }}</span>
+          </div>
+          {% endfor %}
+        {% else %}
+          <p class="text-muted small mb-0">No active exchanges.</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- ─── Recent ledger ────────────────────────────────────────────────── -->
+    <div class="col-md-6">
+      <div class="ss-card p-3">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h2 class="h6 fw-bold mb-0">Recent Ledger Activity</h2>
+          <a href="{% url 'core:ledger' %}" class="btn btn-link btn-sm p-0">Full history</a>
+        </div>
+        {% if recent_ledger %}
+        <table class="table table-sm table-hover mb-0" aria-label="Recent ledger entries">
+          <thead>
+            <tr>
+              <th scope="col">Date</th>
+              <th scope="col">Exchange</th>
+              <th scope="col" class="text-end">Hours</th>
+              <th scope="col" class="text-end">Balance</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for entry in recent_ledger %}
+            <tr>
+              <td class="small text-muted">{{ entry.created_at|date:"d M" }}</td>
+              <td class="small">{{ entry.exchange.service_request.title|truncatechars:25 }}</td>
+              <td class="text-end small {% if entry.hours_delta > 0 %}ledger-earn{% else %}ledger-spend{% endif %}">
+                {% if entry.hours_delta > 0 %}+{% endif %}{{ entry.hours_delta }}h
+              </td>
+              <td class="text-end small fw-semibold">{{ entry.balance_after }}h</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+          <p class="text-muted small mb-0">No transactions yet.</p>
+        {% endif %}
+      </div>
+    </div>
+
+  </div><!-- /row -->
+</div>
+{% endblock %}

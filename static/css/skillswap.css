@@ -1,0 +1,409 @@
+/*
+ * SkillSwap — Custom CSS
+ * Built on top of Bootstrap 5.3
+ * Accessibility: WCAG 2.2 — 1.4.3 Contrast, 2.4.7 Focus Visible, 3.3.1 Error Identification
+ */
+
+/* ─── Custom Properties ─────────────────────────────────────────────────── */
+:root {
+  --ss-primary:       #1a6b5a;   /* dark teal */
+  --ss-primary-dark:  #134e42;
+  --ss-primary-light: #e8f5f2;
+  --ss-accent:        #f0a500;   /* amber */
+  --ss-accent-dark:   #c78200;
+  --ss-text:          #1a1a1a;
+  --ss-muted:         #595959;   /* passes 4.5:1 on white */
+  --ss-border:        #d0d0d0;
+  --ss-success:       #186a3b;
+  --ss-danger:        #b91c1c;
+  --ss-warning-bg:    #fef3cd;
+  --ss-card-shadow:   0 2px 8px rgba(0,0,0,.08);
+  --ss-radius:        0.5rem;
+  --ss-transition:    0.2s ease;
+}
+
+/* ─── Skip-to-main (Accessibility: 2.1.1 Keyboard, 2.4.1) ───────────────── */
+.skip-to-main {
+  position: absolute;
+  top: -100px;
+  left: 1rem;
+  background: var(--ss-primary);
+  color: #fff;
+  padding: 0.6rem 1.2rem;
+  border-radius: var(--ss-radius);
+  font-weight: 600;
+  z-index: 9999;
+  transition: top var(--ss-transition);
+}
+.skip-to-main:focus {
+  top: 1rem;
+  outline: 3px solid var(--ss-accent);
+  outline-offset: 2px;
+}
+
+/* ─── Focus visible (Accessibility: 2.4.7) ──────────────────────────────── */
+:focus-visible {
+  outline: 3px solid var(--ss-accent);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid var(--ss-accent);
+  outline-offset: 2px;
+}
+
+/* ─── Base ───────────────────────────────────────────────────────────────── */
+body {
+  color: var(--ss-text);
+  background-color: #f9fafb;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+/* ─── Navbar ─────────────────────────────────────────────────────────────── */
+.navbar-skillswap {
+  background-color: var(--ss-primary);
+  border-bottom: 3px solid var(--ss-primary-dark);
+}
+.navbar-skillswap .navbar-brand {
+  font-weight: 700;
+  font-size: 1.3rem;
+  color: #fff !important;
+  letter-spacing: -0.3px;
+}
+.navbar-skillswap .nav-link {
+  color: rgba(255,255,255,.88) !important;
+  font-weight: 500;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--ss-radius);
+  transition: background var(--ss-transition);
+}
+.navbar-skillswap .nav-link:hover,
+.navbar-skillswap .nav-link.active {
+  background-color: rgba(255,255,255,.18);
+  color: #fff !important;
+}
+.navbar-skillswap .balance-badge {
+  background: var(--ss-accent);
+  color: #1a1a1a;
+  font-weight: 700;
+  border-radius: 2rem;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.9rem;
+}
+
+/* ─── Hero / Landing ─────────────────────────────────────────────────────── */
+.hero {
+  background: linear-gradient(135deg, var(--ss-primary) 0%, var(--ss-primary-dark) 100%);
+  color: #fff;
+  padding: 4rem 0 3rem;
+}
+.hero h1 {
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  font-weight: 800;
+}
+.hero .lead {
+  font-size: 1.15rem;
+  opacity: .9;
+}
+.hero-cta .btn {
+  padding: 0.7rem 1.8rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: var(--ss-radius);
+}
+
+/* ─── Cards ──────────────────────────────────────────────────────────────── */
+.ss-card {
+  background: #fff;
+  border: 1px solid var(--ss-border);
+  border-radius: var(--ss-radius);
+  box-shadow: var(--ss-card-shadow);
+  transition: box-shadow var(--ss-transition), transform var(--ss-transition);
+}
+.ss-card:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,.12);
+  transform: translateY(-1px);
+}
+
+/* ─── Request cards in marketplace ──────────────────────────────────────── */
+.request-card {
+  border-left: 4px solid var(--ss-primary);
+}
+.request-card .skill-tag {
+  background: var(--ss-primary-light);
+  color: var(--ss-primary-dark);
+  border-radius: 2rem;
+  padding: 0.2rem 0.6rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+.request-card .hours-badge {
+  background: var(--ss-accent);
+  color: #1a1a1a;
+  border-radius: 2rem;
+  padding: 0.2rem 0.6rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+.request-card .bid-count {
+  font-size: 0.82rem;
+  color: var(--ss-muted);
+}
+
+/* ─── Dashboard stat widgets ─────────────────────────────────────────────── */
+.stat-widget {
+  text-align: center;
+  padding: 1.5rem 1rem;
+  border-radius: var(--ss-radius);
+  background: #fff;
+  border: 1px solid var(--ss-border);
+  box-shadow: var(--ss-card-shadow);
+}
+.stat-widget .stat-value {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--ss-primary);
+  line-height: 1;
+}
+.stat-widget .stat-label {
+  font-size: 0.82rem;
+  color: var(--ss-muted);
+  margin-top: 0.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ─── Balance pill ───────────────────────────────────────────────────────── */
+.balance-pill {
+  background: var(--ss-primary);
+  color: #fff;
+  border-radius: 2rem;
+  padding: 0.4rem 1.1rem;
+  font-weight: 700;
+  font-size: 1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* ─── Status badges ──────────────────────────────────────────────────────── */
+.badge-open       { background-color: #0d6efd; }
+.badge-accepted   { background-color: #198754; }
+.badge-completed  { background-color: var(--ss-primary); }
+.badge-cancelled  { background-color: #6c757d; }
+.badge-disputed   { background-color: var(--ss-danger); }
+.badge-pending    { background-color: var(--ss-accent); color: #1a1a1a; }
+
+/* ─── Ledger entries ─────────────────────────────────────────────────────── */
+.ledger-earn  { color: var(--ss-success); font-weight: 700; }
+.ledger-spend { color: var(--ss-danger);  font-weight: 700; }
+
+/* ─── Forms ──────────────────────────────────────────────────────────────── */
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--ss-primary);
+  box-shadow: 0 0 0 0.2rem rgba(26,107,90,.25);
+}
+
+/* Accessible error highlight (Accessibility: 3.3.1 Error Identification) */
+.is-invalid {
+  border-color: var(--ss-danger) !important;
+}
+.invalid-feedback {
+  color: var(--ss-danger);
+  font-size: 0.85rem;
+  display: block;
+}
+.form-error-summary {
+  background: #fef2f2;
+  border: 1px solid #fca5a5;
+  border-radius: var(--ss-radius);
+  padding: 0.75rem 1rem;
+  color: var(--ss-danger);
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+/* ─── Buttons ────────────────────────────────────────────────────────────── */
+.btn-ss-primary {
+  background-color: var(--ss-primary);
+  border-color: var(--ss-primary);
+  color: #fff;
+  font-weight: 600;
+}
+.btn-ss-primary:hover,
+.btn-ss-primary:focus {
+  background-color: var(--ss-primary-dark);
+  border-color: var(--ss-primary-dark);
+  color: #fff;
+}
+.btn-ss-accent {
+  background-color: var(--ss-accent);
+  border-color: var(--ss-accent);
+  color: #1a1a1a;
+  font-weight: 600;
+}
+.btn-ss-accent:hover,
+.btn-ss-accent:focus {
+  background-color: var(--ss-accent-dark);
+  border-color: var(--ss-accent-dark);
+  color: #1a1a1a;
+}
+
+/* ─── Sidebar navigation ─────────────────────────────────────────────────── */
+.sidebar {
+  position: sticky;
+  top: 1.5rem;
+}
+.sidebar .nav-link {
+  color: var(--ss-text);
+  border-radius: var(--ss-radius);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.95rem;
+  transition: background var(--ss-transition);
+}
+.sidebar .nav-link:hover,
+.sidebar .nav-link.active {
+  background: var(--ss-primary-light);
+  color: var(--ss-primary-dark);
+  font-weight: 600;
+}
+.sidebar .nav-link i {
+  width: 1.2rem;
+  margin-right: 0.4rem;
+}
+
+/* ─── Messages thread ────────────────────────────────────────────────────── */
+.message-bubble {
+  background: #f1f5f9;
+  border-radius: var(--ss-radius);
+  padding: 0.6rem 0.9rem;
+  margin-bottom: 0.5rem;
+}
+.message-bubble.own {
+  background: var(--ss-primary-light);
+}
+.message-bubble .sender {
+  font-weight: 600;
+  font-size: 0.82rem;
+  color: var(--ss-primary);
+}
+.message-bubble .timestamp {
+  font-size: 0.75rem;
+  color: var(--ss-muted);
+}
+
+/* ─── Exchange progress timeline ─────────────────────────────────────────── */
+.exchange-step {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0;
+}
+.exchange-step .step-icon {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+.exchange-step .step-icon.done {
+  background: var(--ss-primary);
+  color: #fff;
+}
+.exchange-step .step-icon.pending {
+  background: var(--ss-border);
+  color: var(--ss-muted);
+}
+
+/* ─── Star ratings ───────────────────────────────────────────────────────── */
+.stars .star-filled { color: var(--ss-accent); }
+.stars .star-empty  { color: var(--ss-border); }
+
+/* ─── Toast notifications (Accessibility: 4.1.3 Status Messages) ─────────── */
+.toast-container {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1100;
+  max-width: 360px;
+}
+.toast[role="status"],
+.toast[role="alert"] {
+  border-radius: var(--ss-radius);
+  font-size: 0.92rem;
+}
+
+/* ─── Character counter ──────────────────────────────────────────────────── */
+.char-count {
+  font-size: 0.78rem;
+  color: var(--ss-muted);
+  text-align: right;
+  margin-top: 0.2rem;
+}
+.char-count.warning { color: var(--ss-accent-dark); }
+.char-count.over    { color: var(--ss-danger); }
+
+/* ─── Loading spinner for AJAX ───────────────────────────────────────────── */
+.ajax-spinner {
+  display: none;
+  width: 1.2rem;
+  height: 1.2rem;
+  border: 2px solid rgba(255,255,255,.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  vertical-align: middle;
+  margin-right: 0.3rem;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ─── How-it-works steps ─────────────────────────────────────────────────── */
+.how-step {
+  text-align: center;
+  padding: 2rem 1rem;
+}
+.how-step .step-number {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background: var(--ss-primary);
+  color: #fff;
+  font-size: 1.3rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+}
+.how-step h5 { font-weight: 700; }
+
+/* ─── Skill level chips ──────────────────────────────────────────────────── */
+.level-beginner     { background: #dbeafe; color: #1e40af; }
+.level-intermediate { background: #d1fae5; color: #065f46; }
+.level-advanced     { background: #fef3c7; color: #92400e; }
+.level-expert       { background: #fce7f3; color: #9d174d; }
+.skill-level-badge {
+  border-radius: 2rem;
+  padding: 0.15rem 0.55rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+/* ─── Responsive tweaks ──────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .sidebar { position: static; margin-bottom: 1.5rem; }
+  .hero { padding: 2.5rem 0 2rem; }
+  .stat-widget .stat-value { font-size: 1.5rem; }
+}

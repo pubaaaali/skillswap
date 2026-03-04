@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}{{ action }} Skill{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="ss-card p-4">
+        <h1 class="h4 fw-bold mb-4">{{ action }} Skill</h1>
+        <form method="post" novalidate>
+          {% csrf_token %}
+
+          <div class="mb-3">
+            <label for="{{ form.title.id_for_label }}" class="form-label">Skill title <span class="text-danger" aria-hidden="true">*</span></label>
+            {{ form.title }}
+            {% if form.title.errors %}
+            <div class="invalid-feedback d-block" role="alert">{{ form.title.errors|join:" " }}</div>
+            {% endif %}
+          </div>
+
+          <div class="mb-3">
+            <label for="{{ form.description.id_for_label }}" class="form-label">Description <span class="text-danger" aria-hidden="true">*</span></label>
+            {{ form.description }}
+            {% if form.description.errors %}
+            <div class="invalid-feedback d-block" role="alert">{{ form.description.errors|join:" " }}</div>
+            {% endif %}
+          </div>
+
+          <div class="row g-3 mb-3">
+            <div class="col">
+              <label for="{{ form.level.id_for_label }}" class="form-label">Level</label>
+              {{ form.level }}
+            </div>
+            <div class="col">
+              <label for="{{ form.duration_hours.id_for_label }}" class="form-label">Typical duration (hours)</label>
+              {{ form.duration_hours }}
+              {% if form.duration_hours.errors %}
+              <div class="invalid-feedback d-block" role="alert">{{ form.duration_hours.errors|join:" " }}</div>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="mb-4 form-check">
+            {{ form.is_available }}
+            <label for="{{ form.is_available.id_for_label }}" class="form-check-label">Available for requests</label>
+          </div>
+
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-ss-primary px-4">{{ action }} skill</button>
+            <a href="{% url 'core:profile' username=user.username %}" class="btn btn-outline-secondary">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

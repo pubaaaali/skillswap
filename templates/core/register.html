@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-7 col-lg-5">
+
+      <div class="ss-card p-4 p-md-5">
+        <h1 class="h3 fw-bold mb-1 text-center">Create your account</h1>
+        <p class="text-muted text-center mb-4">You'll start with <strong>5.0 hours</strong> of credit.</p>
+
+        <!-- Error summary (Accessibility: 3.3.1 Error Identification) -->
+        {% if form.errors %}
+        <div class="form-error-summary" role="alert" aria-live="assertive" id="error-summary">
+          <strong><i class="bi bi-exclamation-circle me-1" aria-hidden="true"></i>Please fix the following:</strong>
+          <ul class="mb-0 mt-1 ps-3">
+            {% for field in form %}
+              {% for error in field.errors %}
+              <li>{{ field.label }}: {{ error }}</li>
+              {% endfor %}
+            {% endfor %}
+            {% for error in form.non_field_errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+
+        <form method="post" action="{% url 'core:register' %}" novalidate aria-describedby="error-summary">
+          {% csrf_token %}
+
+          <div class="row g-3 mb-3">
+            <div class="col">
+              <label for="{{ form.first_name.id_for_label }}" class="form-label">First name</label>
+              {{ form.first_name }}
+              {% if form.first_name.errors %}
+              <div class="invalid-feedback d-block" role="alert">{{ form.first_name.errors|join:" " }}</div>
+              {% endif %}
+            </div>
+            <div class="col">
+              <label for="{{ form.last_name.id_for_label }}" class="form-label">Last name</label>
+              {{ form.last_name }}
+              {% if form.last_name.errors %}
+              <div class="invalid-feedback d-block" role="alert">{{ form.last_name.errors|join:" " }}</div>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="{{ form.email.id_for_label }}" class="form-label">Email <span class="text-danger" aria-hidden="true">*</span></label>
+            {{ form.email }}
+            {% if form.email.errors %}
+            <div class="invalid-feedback d-block" role="alert">{{ form.email.errors|join:" " }}</div>
+            {% endif %}
+          </div>
+
+          <div class="mb-3">
+            <label for="{{ form.username.id_for_label }}" class="form-label">Username <span class="text-danger" aria-hidden="true">*</span></label>
+            {{ form.username }}
+            <div class="form-text">This will be your public display name.</div>
+            {% if form.username.errors %}
+            <div class="invalid-feedback d-block" role="alert">{{ form.username.errors|join:" " }}</div>
+            {% endif %}
+          </div>
+
+          <div class="mb-3">
+            <label for="{{ form.password1.id_for_label }}" class="form-label">Password <span class="text-danger" aria-hidden="true">*</span></label>
+            {{ form.password1 }}
+            <div class="form-text">At least 8 characters.</div>
+            {% if form.password1.errors %}
+            <div class="invalid-feedback d-block" role="alert">{{ form.password1.errors|join:" " }}</div>
+            {% endif %}
+          </div>
+
+          <div class="mb-4">
+            <label for="{{ form.password2.id_for_label }}" class="form-label">Confirm password <span class="text-danger" aria-hidden="true">*</span></label>
+            {{ form.password2 }}
+            {% if form.password2.errors %}
+            <div class="invalid-feedback d-block" role="alert">{{ form.password2.errors|join:" " }}</div>
+            {% endif %}
+          </div>
+
+          <button type="submit" class="btn btn-ss-primary w-100 py-2 fw-semibold">
+            Create account
+          </button>
+        </form>
+
+        <p class="text-center text-muted mt-3 mb-0">
+          Already have an account? <a href="{% url 'core:login' %}">Log in</a>
+        </p>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

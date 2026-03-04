@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}My Bids{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <h1 class="h3 fw-bold mb-4">My Bids</h1>
+
+  {% if bids %}
+  <div class="row g-3">
+    {% for bid in bids %}
+    <div class="col-12">
+      <div class="ss-card p-3">
+        <div class="d-flex flex-wrap justify-content-between align-items-start gap-2">
+          <div>
+            <h2 class="h5 mb-1">
+              <a href="{% url 'core:request_detail' pk=bid.request.pk %}" class="text-decoration-none">
+                {{ bid.request.title }}
+              </a>
+            </h2>
+            <div class="text-muted small">
+              by <a href="{% url 'core:profile' username=bid.request.requester.username %}"
+                    class="text-muted text-decoration-none">
+                {{ bid.request.requester.get_full_name|default:bid.request.requester.username }}
+              </a>
+              · Posted {{ bid.request.created_at|date:"d M Y" }}
+            </div>
+            <p class="small mt-1 mb-0 text-muted">"{{ bid.message|truncatechars:100 }}"</p>
+          </div>
+          <div class="text-end">
+            <div><span class="hours-badge">{{ bid.proposed_hours }}h proposed</span></div>
+            <div class="mt-1">
+              <span class="badge badge-{{ bid.status }}">{{ bid.get_status_display }}</span>
+            </div>
+          </div>
+        </div>
+
+        {% if bid.status == 'accepted' %}
+        <div class="mt-2">
+          <a href="{% url 'core:exchange_detail' pk=bid.exchange.pk %}" class="btn btn-ss-primary btn-sm">
+            View exchange
+          </a>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="text-center py-5 text-muted">
+    <i class="bi bi-hand-index fs-1 d-block mb-2" aria-hidden="true"></i>
+    <p>You haven't placed any bids yet.</p>
+    <a href="{% url 'core:marketplace' %}" class="btn btn-ss-primary">Browse requests</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

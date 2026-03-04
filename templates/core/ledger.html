@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Ledger{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+    <div>
+      <h1 class="h3 fw-bold mb-0">Transaction Ledger</h1>
+      <p class="text-muted mb-0">Full credit history for your account</p>
+    </div>
+    <div class="balance-pill live-balance" aria-label="Current balance: {{ profile.time_balance }} hours">
+      <i class="bi bi-clock" aria-hidden="true"></i>
+      Current balance: {{ profile.time_balance }}h
+    </div>
+  </div>
+
+  {% if entries %}
+  <div class="ss-card">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0" aria-label="Transaction history">
+        <thead class="table-light">
+          <tr>
+            <th scope="col">Date</th>
+            <th scope="col">Exchange / Request</th>
+            <th scope="col">Type</th>
+            <th scope="col" class="text-end">Hours</th>
+            <th scope="col" class="text-end">Balance after</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for entry in entries %}
+          <tr>
+            <td class="small text-muted">{{ entry.created_at|date:"d M Y, H:i" }}</td>
+            <td>
+              <a href="{% url 'core:exchange_detail' pk=entry.exchange.pk %}" class="text-decoration-none">
+                {{ entry.exchange.service_request.title|truncatechars:50 }}
+              </a>
+            </td>
+            <td>
+              <span class="badge {% if entry.entry_type == 'earn' %}bg-success{% else %}bg-danger{% endif %}">
+                {{ entry.get_entry_type_display }}
+              </span>
+            </td>
+            <td class="text-end fw-bold {% if entry.hours_delta > 0 %}ledger-earn{% else %}ledger-spend{% endif %}">
+              {% if entry.hours_delta > 0 %}+{% endif %}{{ entry.hours_delta }}h
+            </td>
+            <td class="text-end fw-semibold">{{ entry.balance_after }}h</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% else %}
+  <div class="text-center py-5 text-muted">
+    <i class="bi bi-journal-x fs-1 d-block mb-2" aria-hidden="true"></i>
+    <p>No transactions yet. Start by posting or accepting a request!</p>
+    <a href="{% url 'core:marketplace' %}" class="btn btn-ss-primary btn-sm">Browse the marketplace</a>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+{% load core_extras %}
+
+{% block title %}{{ viewed_user.get_full_name|default:viewed_user.username }}'s Profile{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="row g-4">
+
+    <!-- ─── Profile sidebar ─────────────────────────────────────────────── -->
+    <div class="col-md-4 col-lg-3">
+      <div class="ss-card p-4 text-center">
+        {% if profile.avatar %}
+          <img src="{{ profile.avatar.url }}" alt="Avatar of {{ viewed_user.username }}"
+               class="rounded-circle mb-3" width="100" height="100" style="object-fit:cover;">
+        {% else %}
+          <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center mx-auto mb-3"
+               style="width:100px;height:100px;" aria-hidden="true">
+            <i class="bi bi-person-fill text-white fs-1"></i>
+          </div>
+        {% endif %}
+
+        <h1 class="h5 fw-bold mb-0">{{ viewed_user.get_full_name|default:viewed_user.username }}</h1>
+        <p class="text-muted small mb-2">@{{ viewed_user.username }}</p>
+
+        {% if avg_rating %}
+        <div class="stars mb-2" aria-label="Average rating: {{ avg_rating }} out of 5">
+          {% for i in avg_rating|star_range %}
+          <i class="bi bi-star-fill star-filled" aria-hidden="true"></i>
+          {% endfor %}
+          {% for i in avg_rating|empty_stars %}
+          <i class="bi bi-star star-empty" aria-hidden="true"></i>
+          {% endfor %}
+          <small class="text-muted">({{ reviews|length }})</small>
+        </div>
+        {% endif %}
+
+        <div class="balance-pill mb-3" aria-label="{{ viewed_user.username }}'s balance: {{ profile.time_balance }} hours">
+          <i class="bi bi-clock" aria-hidden="true"></i>
+          {{ profile.time_balance }}h
+        </div>
+
+        {% if profile.bio %}
+        <p class="text-muted small">{{ profile.bio }}</p>
+        {% endif %}
+
+        {% if is_own_profile %}
+        <a href="{% url 'core:profile_edit' %}" class="btn btn-outline-secondary btn-sm w-100 mb-2">
+          <i class="bi bi-pencil me-1" aria-hidden="true"></i>Edit profile
+        </a>
+        <a href="{% url 'core:skill_add' %}" class="btn btn-ss-primary btn-sm w-100">
+          <i class="bi bi-plus me-1" aria-hidden="true"></i>Add skill
+        </a>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- ─── Skills & reviews ─────────────────────────────────────────────── -->
+    <div class="col-md-8 col-lg-9">
+
+      <!-- Skills offered -->
+      <section aria-labelledby="skills-heading" class="mb-4">
+        <h2 id="skills-heading" class="h5 fw-bold mb-3">Skills Offered</h2>
+        {% if skills %}
+        <div class="row g-3">
+          {% for skill in skills %}
+          <div class="col-sm-6 col-lg-4">
+            <div class="ss-card p-3 h-100">
+              <div class="d-flex justify-content-between align-items-start mb-1">
+                <h3 class="h6 fw-semibold mb-0">{{ skill.title }}</h3>
+                <span class="skill-level-badge level-{{ skill.level }}">{{ skill.get_level_display }}</span>
+              </div>
+              <p class="text-muted small mb-2">{{ skill.description|truncatechars:100 }}</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <small class="text-muted">
+                  <i class="bi bi-clock me-1" aria-hidden="true"></i>{{ skill.duration_hours }}h typical
+                </small>
+                {% if is_own_profile %}
+                <div class="d-flex gap-1">
+                  <a href="{% url 'core:skill_edit' pk=skill.pk %}"
+                     class="btn btn-link btn-sm p-0 text-muted" aria-label="Edit skill {{ skill.title }}">
+                    <i class="bi bi-pencil" aria-hidden="true"></i>
+                  </a>
+                  <form method="post" action="{% url 'core:skill_delete' pk=skill.pk %}"
+                        data-confirm="Delete skill '{{ skill.title }}'?">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-link btn-sm p-0 text-danger"
+                            aria-label="Delete skill {{ skill.title }}">
+                      <i class="bi bi-trash" aria-hidden="true"></i>
+                    </button>
+                  </form>
+                </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-muted">No skills listed yet.</p>
+        {% endif %}
+      </section>
+
+      <!-- Reviews received -->
+      {% if reviews %}
+      <section aria-labelledby="reviews-heading">
+        <h2 id="reviews-heading" class="h5 fw-bold mb-3">Reviews</h2>
+        {% for review in reviews %}
+        <div class="ss-card p-3 mb-3">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <a href="{% url 'core:profile' username=review.reviewer.username %}" class="fw-semibold text-decoration-none">
+                {{ review.reviewer.get_full_name|default:review.reviewer.username }}
+              </a>
+              <div class="stars" aria-label="Rating: {{ review.rating }} out of 5">
+                {% for i in review.rating|star_range %}
+                <i class="bi bi-star-fill star-filled small" aria-hidden="true"></i>
+                {% endfor %}
+                {% for i in review.rating|empty_stars %}
+                <i class="bi bi-star star-empty small" aria-hidden="true"></i>
+                {% endfor %}
+              </div>
+            </div>
+            <small class="text-muted">{{ review.created_at|date:"d M Y" }}</small>
+          </div>
+          {% if review.comment %}
+          <p class="mb-0 mt-2 small">{{ review.comment }}</p>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </section>
+      {% endif %}
+
+    </div>
+  </div>
+</div>
+{% endblock %}
